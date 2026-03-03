@@ -1,5 +1,0 @@
-- extremely short complaints are negligible (0.13)
-- there exists some outliers with very long word count
-- There is no extreme imbalance in text length across departments
-- No department is systematically too short. Even the smallest class has reasonable text length.
-- Most departments are linguistically separable based on vocabulary patterns. This suggests that a text classification model should be able to learn meaningful distinctions between categories. The only potentially weak class is Financial Services Support due to its small size and overlapping terminology, which may lead to lower performance for that category.

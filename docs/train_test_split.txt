@@ -1,6 +1,0 @@
-- we create a stable complaint id for each complaints so that we can connect departmental model results with priority classfication model
-- we need to split training and test sets before proceeding with any model design. we do so keeping proportion of each departments in 
-both sets
-- we save the split to proceed with departmental models
-- for priority classification model we gonna use the same split but we feature engineer new priority classes later.
-
