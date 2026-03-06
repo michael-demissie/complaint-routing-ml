@@ -1,6 +1,6 @@
 ## Weak Priority Label Engineering from Complaint Narratives
 
-Priority labels were weakly engineered from the complaint narratives to simulate how a financial service system might triage incoming complaints by urgency.
+Priority labels were weakly engineered from the complaint narratives.
 
 Three priority levels were defined:
 
