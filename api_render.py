@@ -307,4 +307,4 @@ def get_reviewer_complaints(current_user = Depends(get_current_user)):
 
     return complaints
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
