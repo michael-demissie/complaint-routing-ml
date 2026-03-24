@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -26,12 +27,53 @@ app.add_middleware(
 
 templates = Jinja2Templates(directory="templates")
 
+# -------------------------
+# PAGE ROUTES (HTML)
+# -------------------------
+
 @app.get("/", response_class=HTMLResponse)
-def serve_portal(request: Request):
-    return templates.TemplateResponse(
-        "customer_portal.html",   # 👈 your file name
-        {"request": request}
-    )
+def home(request: Request):
+    return templates.TemplateResponse("customer_portal.html", {"request": request})
+
+
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/register-page", response_class=HTMLResponse)
+def register_page(request: Request):
+    return templates.TemplateResponse("customer_registration.html", {"request": request})
+
+
+@app.get("/customer-dashboard", response_class=HTMLResponse)
+def customer_dashboard(request: Request):
+    return templates.TemplateResponse("customer_dashboard.html", {"request": request})
+
+
+@app.get("/submit-complaint-page", response_class=HTMLResponse)
+def submit_page(request: Request):
+    return templates.TemplateResponse("complaint_submission.html", {"request": request})
+
+
+@app.get("/operator-dashboard", response_class=HTMLResponse)
+def operator_dashboard(request: Request):
+    return templates.TemplateResponse("operator_dashboard.html", {"request": request})
+
+
+@app.get("/reviewer-dashboard", response_class=HTMLResponse)
+def reviewer_dashboard(request: Request):
+    return templates.TemplateResponse("reviewer_dashboard.html", {"request": request})
+
+
+@app.get("/staff-portal", response_class=HTMLResponse)
+def staff_portal(request: Request):
+    return templates.TemplateResponse("staff_portal.html", {"request": request})
+
+
+@app.get("/staff-register", response_class=HTMLResponse)
+def staff_register(request: Request):
+    return templates.TemplateResponse("staff_registration.html", {"request": request})
     
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -71,9 +113,10 @@ def register(user: UserCreate):
         VALUES (%s, %s, %s, %s, %s)
     """, (user.name, user.email, hashed_password, role, user.department))
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        conn.commit()
+    except:
+        raise HTTPException(status_code=400, detail="Email already exists")
 
     return {"message": f"{role} registered successfully"}
 
@@ -126,8 +169,11 @@ def login(user: UserLogin):
 # -------------------------
 # LOAD MODELS
 # -------------------------
-department_model = joblib.load("models/department_model.joblib")
-priority_model = joblib.load("models/priority_model.joblib")
+
+BASE_DIR = os.path.dirname(__file__)
+
+department_model = joblib.load(os.path.join(BASE_DIR, "models/department_model.joblib"))
+priority_model = joblib.load(os.path.join(BASE_DIR, "models/priority_model.joblib"))
 
 def predict_department_and_priority(text: str):
     input_data = [text]
@@ -157,10 +203,10 @@ def get_user_by_id(user_id):
     cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
     row = cursor.fetchone()
 
+    user = row_to_dict(cursor, row)
     cursor.close()
     conn.close()
-
-    return row_to_dict(cursor, row) if row else None
+    return user
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
@@ -263,7 +309,7 @@ def get_operator_complaints(current_user = Depends(get_current_user)):
         ORDER BY c.created_at DESC
     """, (current_user["department"],))
 
-    complaints = cursor.fetchall()
+    complaints = rows_to_dicts(cursor, cursor.fetchall())
 
     cursor.close()
     conn.close()
@@ -300,7 +346,7 @@ def get_reviewer_complaints(current_user = Depends(get_current_user)):
         ORDER BY c.created_at DESC
     """)
 
-    complaints = cursor.fetchall()
+    complaints = rows_to_dicts(cursor, cursor.fetchall())
 
     cursor.close()
     conn.close()
