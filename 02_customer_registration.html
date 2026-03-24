@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FinResolve Portal</title>
+
+    <style>
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;      
+            overflow: hidden;  
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .header {
+            padding-top:30px;
+            display: flex;
+            align-items: center;
+            height: 60px;  
+            overflow: hidden;
+        }
+
+        .header img {
+            height: 200px;         
+            display: block;      
+        }
+
+        .separator {
+            height: 40px;                
+            background-color: #0c3c52;    
+            width: 100%;
+            flex-shrink: 0; 
+        }
+        
+       .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px;
+        }
+        
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+        }
+        
+        .form-box h2 {
+            margin-top: 0;
+            color: #0c3c52;
+        }
+        
+        .form-box label {
+            display: block;
+            margin-top: 15px;
+        }
+        
+        .form-box input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        
+        .form-box button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #0c3c52;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .form-box button:hover {
+            background-color: #145a7a;
+        }
+
+        footer {
+            background-color: #0c3c52;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 0;
+            flex-shrink: 0;
+        }
+    </style>
+
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="01_customer_portal.html">
+            <img src="logo.png" alt="Logo">
+        </a>
+    </div>
+
+    <div class='separator'></div>
+
+    <!-- Main Content -->
+    
+    <div class="container">
+        <div class="form-box">
+            
+            <h2>Register</h2>
+            <p>To register for an account, please enter the information requested below.</p>
+    
+            <form id="registerForm">
+
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+            
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+            
+                <button type="submit">Submit</button>
+            
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>FinResolve System</strong></p>
+        <p>Helping users resolve financial complaints efficiently and transparently.</p>
+        <p>Email: support@finresolve.com</p>
+        <p>&copy; 2026 FinResolve. All rights reserved.</p>
+    </footer>
+
+    <script>
+
+    const nameInput = document.getElementById("name");
+        nameInput.addEventListener("blur", function () {
+            this.value = this.value
+                .toLowerCase()
+                .replace(/\b\w/g, char => char.toUpperCase());
+        });
+        
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+    
+        const data = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        };
+    
+        try {
+            const response = await fetch("http://127.0.0.1:8000/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+            document.querySelector(".form-box").innerHTML = `
+                <div style="text-align: center;">
+                    <h2 style="color: green;">Your account has been successfully created.</h2>
+                    <p>You will be redirected to the login page shortly.</p>
+                </div>
+            `;
+
+            setTimeout(() => {
+                window.location.replace("03_login.html");
+            }, 3000);
+                
+            } else {
+                alert(result.detail || "Error occurred");
+            }
+    
+        } catch (error) {
+            alert("Server error");
+            console.error(error);
+        }
+    });
+    </script>
+    
+</body>
+</html>

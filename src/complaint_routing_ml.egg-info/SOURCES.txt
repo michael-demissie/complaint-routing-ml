@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-src/complaint_routing_ml/__init__.py
-src/complaint_routing_ml/paths.py
-src/complaint_routing_ml.egg-info/PKG-INFO
-src/complaint_routing_ml.egg-info/SOURCES.txt
-src/complaint_routing_ml.egg-info/dependency_links.txt
-src/complaint_routing_ml.egg-info/requires.txt
-src/complaint_routing_ml.egg-info/top_level.txt

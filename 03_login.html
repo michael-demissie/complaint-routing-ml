@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FinResolve Portal</title>
+
+    <style>
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;      
+            overflow: hidden;   
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .header {
+            padding-top:30px;
+            display: flex;
+            align-items: center;
+            height: 60px;   
+            overflow: hidden;
+        }
+
+        .header img {
+            height: 200px;        
+            display: block;       
+        }
+
+        .separator {
+            height: 40px;                  
+            background-color: #0c3c52;    
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+       .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px;
+        }
+        
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+        }
+        
+        .form-box h2 {
+            margin-top: 0;
+            color: #0c3c52;
+        }
+        
+        .form-box label {
+            display: block;
+            margin-top: 15px;
+        }
+        
+        .form-box input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        
+        .form-box button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #0c3c52;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .form-box button:hover {
+            background-color: #145a7a;
+        }
+
+        footer {
+            background-color: #0c3c52;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 0;
+            flex-shrink: 0;
+        }
+    </style>
+
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="01_customer_portal.html">
+            <img src="logo.png" alt="Logo">
+        </a>
+    </div>
+
+    <div class='separator'></div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="form-box">
+            
+            <h2>Login</h2>
+            <p>To log in, please enter your email address and password.</p>
+    
+            <form action="#" method="post">
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+    
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+    
+                <button type="submit">Login</button>
+    
+            </form>
+    
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>FinResolve System</strong></p>
+        <p>Helping users resolve financial complaints efficiently and transparently.</p>
+        <p>Email: support@finresolve.com</p>
+        <p>&copy; 2026 FinResolve. All rights reserved.</p>
+    </footer>
+
+<script>
+    
+function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = atob(base64Url);
+    return JSON.parse(base64);
+}
+
+document.querySelector("form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            const token = data.access_token;
+
+            // store token
+            localStorage.setItem("token", token);
+
+            // decode token
+            const decoded = parseJwt(token);
+            const role = decoded.role;
+
+            // redirect based on role
+            if (role === "customer") {
+                window.location.href = "06_customer_dashboard.html";
+            } 
+            else if (role === "operator") {
+                window.location.href = "08_operator_dashboard.html";
+            } 
+            else if (role === "reviewer") {
+                window.location.href = "09_reviewer_dashboard.html";
+            }
+
+        } else {
+            alert(data.detail);
+        }
+
+    } catch (error) {
+        alert("Error connecting to server");
+        console.error(error);
+    }
+});
+</script>
+    
+</body>
+</html>

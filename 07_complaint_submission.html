@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Complaint</title>
+
+    <script>
+        const token = localStorage.getItem("token");
+    
+        if (!token) {
+            window.location.replace("03_login.html");
+        }
+    </script>
+    
+    <style>
+    
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    
+    body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;     
+            overflow: hidden;   
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+    }
+    
+    .header {
+            padding-top: 30px;
+            display: flex;
+            align-items: center;
+            height: 60px;
+            overflow: hidden;
+        }
+    
+    .header img {
+        height: 200px;
+    }
+    
+    .separator {
+        height: 40px;
+        background-color: #0c3c52;
+        width: 100%;
+        flex-shrink: 0;
+    }
+    
+    /* Main */
+    .container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+    }
+    
+    /* Form box */
+    .form-box {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        width: 500px;
+    }
+    
+    .form-box h2 {
+        margin-top: 0;
+        color: #0c3c52;
+    }
+    
+    .form-box label {
+        display: block;
+        margin-top: 15px;
+    }
+    
+    /* textarea */
+    .form-box textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        margin-top: 5px;
+        resize: none;
+        box-sizing: border-box;
+    }
+    
+    /* button */
+    .form-box button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background-color: #0c3c52;
+        color: white;
+        cursor: pointer;
+    }
+    
+    .form-box button:hover {
+        background-color: #145a7a;
+    }
+    
+    /* Footer */
+    footer {
+        background-color: #0c3c52;
+        color: white;
+        text-align: center;
+        padding: 30px;
+        flex-shrink: 0;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <img src="logo.png">
+    </div>
+    
+    <div class="separator"></div>
+    
+    <div class="container">
+    
+        <div class="form-box" id="formBox">
+    
+            <h2>Submit a Complaint</h2>
+            <p>Please describe your issue clearly. Our system will analyze and route it to the appropriate department.</p>
+    
+            <form id="complaintForm">
+    
+                <label for="complaint">Complaint:</label>
+                <textarea id="complaint" required></textarea>
+    
+                <button type="submit">Submit Complaint</button>
+    
+            </form>
+    
+        </div>
+    
+    </div>
+    
+    <footer>
+        <p><strong>FinResolve System</strong></p>
+        <p>Helping users resolve financial complaints efficiently and transparently.</p>
+    </footer>
+
+    <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+    
+        <div style="background:white; padding:30px; border-radius:8px; width:400px; text-align:center; animation:fadeIn 0.3s ease;">
+            
+            <h3 style="color:#0c3c52;">Confirm Submission</h3>
+    
+            <p style="margin-top:15px; line-height:1.6;">
+                Are you sure you want to submit this complaint?
+            </p>
+    
+            <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
+                <button id="confirmYes" type="button" style="padding:10px 20px; background:#0c3c52; color:white; border:none; cursor:pointer;">
+                    Yes, Submit
+                </button>
+    
+                <button id="confirmNo" type="button" style="padding:10px 20px; background:#ccc; border:none; cursor:pointer;">
+                    Cancel
+                </button>
+            </div>
+    
+        </div>
+    </div>
+    <script>
+        
+        function getResolutionTime(priority) {
+            if (priority === "Critical") return "1–2 business days";
+            if (priority === "High") return "3–4 business days";
+            return "5–6 business days";
+        }
+        
+        function showMessage(messageText) {
+            const box = document.getElementById("formBox");
+        
+            box.innerHTML = `
+                <h2 style="color:#0c3c52;">Submission Successful</h2>
+                <p style="margin-top:20px; line-height:1.6;">
+                    ${messageText}
+                </p>
+                <p style="margin-top:20px; font-size:12px; color:#777;">
+                    Redirecting to dashboard...
+                </p>
+            `;
+        }
+        const form = document.getElementById("complaintForm");
+        const modal = document.getElementById("confirmModal");
+        const confirmYes = document.getElementById("confirmYes");
+        const confirmNo = document.getElementById("confirmNo");
+        
+        
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+        
+            // show modal instead of submitting
+            modal.style.display = "flex";
+        });
+        
+            confirmNo.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+        
+            confirmYes.addEventListener("click", async () => {
+            modal.style.display = "none";
+        
+            const complaintText = document.getElementById("complaint").value;
+            const token = localStorage.getItem("token");
+        
+            try {
+                const response = await fetch("http://127.0.0.1:8000/submit-complaint", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        complaint_text: complaintText
+                    })
+                });
+        
+                const data = await response.json();
+        
+                if (response.ok) {
+        
+                    let message = "";
+        
+                    if (data.needs_review) {
+                        message = `
+                        Thank you for submitting your complaint.<br><br>
+                        Your complaint will be reviewed by our team and routed to the appropriate department shortly.
+                        `;
+                    } else {
+                        const resolutionTime = getResolutionTime(data.priority);
+        
+                        message = `
+                        Thank you for submitting your complaint.<br><br>
+                        Your complaint has been routed to the <strong>${data.department}</strong> department.<br><br>
+                        Please allow ${resolutionTime} for resolution.
+                        `;
+                    }
+        
+                    showMessage(message);
+        
+                    setTimeout(() => {
+                        window.location.href = "06_customer_dashboard.html";
+                    }, 10000);
+        
+                } else {
+                    alert(data.detail);
+                }
+        
+            } catch (error) {
+                alert("Error submitting complaint");
+                console.error(error);
+            }
+        });
+        
+    </script>
+    
+
+</body>
+</html>
