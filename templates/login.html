@@ -180,13 +180,13 @@ document.querySelector("form").addEventListener("submit", async function(e) {
 
             // redirect based on role
             if (role === "customer") {
-                window.location.href = "customer_dashboard";
+                window.location.href = "/customer_dashboard";
             } 
             else if (role === "operator") {
-                window.location.href = "operator_dashboard";
+                window.location.href = "/operator_dashboard";
             } 
             else if (role === "reviewer") {
-                window.location.href = "reviewer_dashboard";
+                window.location.href = "/reviewer_dashboard";
             }
 
         } else {

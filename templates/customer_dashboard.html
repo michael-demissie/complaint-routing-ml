@@ -10,7 +10,7 @@
         const token = localStorage.getItem("token");
     
         if (!token) {
-            window.location.replace("login");
+            window.location.replace("/login");
         }
     </script>
     
@@ -193,11 +193,11 @@
 
         function logout() {
             localStorage.removeItem("token");   // remove auth
-            window.location.href = "login.html";  // redirect
+            window.location.href = "/login";  // redirect
         }
         
         function goToCreate() {
-            window.location.href = "complaint_submission";
+            window.location.href = "/complaint_submission";
         }
         
         // Format date nicely

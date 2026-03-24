@@ -10,7 +10,7 @@
         const token = localStorage.getItem("token");
     
         if (!token) {
-            window.location.replace("login.html");
+            window.location.replace("/login");
         }
     </script>
     
@@ -126,7 +126,7 @@
 <body>
 
     <div class="header">
-        <a href="customer_dashboard"
+        <a href="/customer_dashboard"
             <img src="/static/logo.png" alt="logo">
         </a>
     </div>
@@ -260,7 +260,7 @@
                     showMessage(message);
         
                     setTimeout(() => {
-                        window.location.href = "customer_dashboard";
+                        window.location.href = "/customer_dashboard";
                     }, 10000);
         
                 } else {

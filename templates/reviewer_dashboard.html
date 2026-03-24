@@ -10,7 +10,7 @@
         const token = localStorage.getItem("token");
     
         if (!token) {
-            window.location.replace("login");
+            window.location.replace("/login");
         }
     </script>
     
@@ -348,7 +348,7 @@ logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("token");
 
     // redirect to login
-    window.location.replace("login");
+    window.location.replace("/login");
 });
 window.onload = loadReviewerComplaints;
 
