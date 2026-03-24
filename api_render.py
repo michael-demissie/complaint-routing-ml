@@ -170,10 +170,10 @@ def login(user: UserLogin):
 # LOAD MODELS
 # -------------------------
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-department_model = joblib.load(os.path.join(BASE_DIR, "models/department_model.joblib"))
-priority_model = joblib.load(os.path.join(BASE_DIR, "models/priority_model.joblib"))
+department_model = joblib.load(os.path.join(BASE_DIR, "models", "department_model.joblib"))
+priority_model = joblib.load(os.path.join(BASE_DIR, "models", "priority_model.joblib"))
 
 def predict_department_and_priority(text: str):
     input_data = [text]
