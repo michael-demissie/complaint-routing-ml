@@ -241,7 +241,7 @@ def submit_complaint(complaint: ComplaintCreate, current_user = Depends(get_curr
 @app.get("/operator-complaints")
 def get_operator_complaints(current_user = Depends(get_current_user)):
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor()
 
     if current_user["role"] != "operator":
         raise HTTPException(status_code=403, detail="Not authorized")
@@ -276,7 +276,7 @@ def get_operator_complaints(current_user = Depends(get_current_user)):
 @app.get("/reviewer-complaints")
 def get_reviewer_complaints(current_user = Depends(get_current_user)):
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor()
 
     if current_user["role"] != "reviewer":
         raise HTTPException(status_code=403, detail="Not authorized")
