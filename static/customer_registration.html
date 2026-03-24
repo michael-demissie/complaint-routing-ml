@@ -5,7 +5,6 @@
     <title>FinResolve Portal</title>
 
     <style>
-
         html, body {
             height: 100%;
             margin: 0;
@@ -15,7 +14,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;      
-            overflow: hidden;   
+            overflow: hidden;  
             font-family: Arial, sans-serif;
             background-color: #f5f7fa;
         }
@@ -24,20 +23,20 @@
             padding-top:30px;
             display: flex;
             align-items: center;
-            height: 60px;   
+            height: 60px;  
             overflow: hidden;
         }
 
         .header img {
-            height: 200px;        
-            display: block;       
+            height: 200px;         
+            display: block;      
         }
 
         .separator {
-            height: 40px;                  
+            height: 40px;                
             background-color: #0c3c52;    
             width: 100%;
-            flex-shrink: 0;
+            flex-shrink: 0; 
         }
         
        .container {
@@ -97,42 +96,47 @@
     </style>
 
     <script>
-        // ✅ Works locally + on Render
+        // ✅ Works both locally and on Render
         const BASE_URL = window.location.origin;
     </script>
 
 </head>
 <body>
 
+    <!-- Header -->
     <div class="header">
-        <a href="01_customer_portal.html">
+        <a href="/">
             <img src="logo.png" alt="Logo">
         </a>
     </div>
 
     <div class='separator'></div>
 
+    <!-- Main Content -->
     <div class="container">
         <div class="form-box">
             
-            <h2>Login</h2>
-            <p>To log in, please enter your email address and password.</p>
+            <h2>Register</h2>
+            <p>To register for an account, please enter the information requested below.</p>
     
-            <form>
-    
+            <form id="registerForm">
+
+                <label>Name:</label>
+                <input type="text" id="name" required>
+            
                 <label>Email:</label>
                 <input type="email" id="email" required>
-    
+            
                 <label>Password:</label>
                 <input type="password" id="password" required>
-    
-                <button type="submit">Login</button>
-    
+            
+                <button type="submit">Submit</button>
+            
             </form>
-    
         </div>
     </div>
 
+    <!-- Footer -->
     <footer>
         <p><strong>FinResolve System</strong></p>
         <p>Helping users resolve financial complaints efficiently and transparently.</p>
@@ -140,65 +144,57 @@
         <p>&copy; 2026 FinResolve. All rights reserved.</p>
     </footer>
 
-<script>
+    <script>
+
+    const nameInput = document.getElementById("name");
+    nameInput.addEventListener("blur", function () {
+        this.value = this.value
+            .toLowerCase()
+            .replace(/\b\w/g, char => char.toUpperCase());
+    });
+        
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
     
-function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = atob(base64Url);
-    return JSON.parse(base64);
-}
+        const data = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        };
+    
+        try {
+            const response = await fetch(`${BASE_URL}/register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                document.querySelector(".form-box").innerHTML = `
+                    <div style="text-align: center;">
+                        <h2 style="color: green;">Your account has been successfully created.</h2>
+                        <p>You will be redirected to the login page shortly.</p>
+                    </div>
+                `;
 
-document.querySelector("form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-        const response = await fetch(`${BASE_URL}/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            const token = data.access_token;
-
-            // store token
-            localStorage.setItem("token", token);
-
-            // decode token
-            const decoded = parseJwt(token);
-            const role = decoded.role;
-
-            // redirect based on role
-            if (role === "customer") {
-                window.location.href = "06_customer_dashboard.html";
-            } 
-            else if (role === "operator") {
-                window.location.href = "08_operator_dashboard.html";
-            } 
-            else if (role === "reviewer") {
-                window.location.href = "09_reviewer_dashboard.html";
+                setTimeout(() => {
+                    window.location.replace("login.html");
+                }, 3000);
+                
+            } else {
+                alert(result.detail || "Error occurred");
             }
-
-        } else {
-            alert(data.detail);
+    
+        } catch (error) {
+            alert("Server error");
+            console.error(error);
         }
-
-    } catch (error) {
-        alert("Error connecting to server");
-        console.error(error);
-    }
-});
-</script>
+    });
+    </script>
     
 </body>
 </html>

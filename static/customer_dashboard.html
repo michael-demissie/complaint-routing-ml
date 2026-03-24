@@ -10,7 +10,7 @@
         const token = localStorage.getItem("token");
     
         if (!token) {
-            window.location.replace("03_login.html");
+            window.location.replace("login.html");
         }
     </script>
     
@@ -165,7 +165,7 @@
 <body>
 
    <div class="header">
-        <a href="06_customer_dashboard.html">
+        <a href="">
             <img src="logo.png" alt="Logo">
         </a>
     
@@ -193,11 +193,11 @@
 
         function logout() {
             localStorage.removeItem("token");   // remove auth
-            window.location.href = "03_login.html";  // redirect
+            window.location.href = "login.html";  // redirect
         }
         
         function goToCreate() {
-            window.location.href = "07_complaint_submission.html";
+            window.location.href = "complaint_submission.html";
         }
         
         // Format date nicely
