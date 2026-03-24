@@ -41,7 +41,7 @@ def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.get("/register-page", response_class=HTMLResponse)
+@app.get("/customer-registration", response_class=HTMLResponse)
 def register_page(request: Request):
     return templates.TemplateResponse("customer_registration.html", {"request": request})
 
@@ -51,7 +51,7 @@ def customer_dashboard(request: Request):
     return templates.TemplateResponse("customer_dashboard.html", {"request": request})
 
 
-@app.get("/submit-complaint-page", response_class=HTMLResponse)
+@app.get("/complaint-submission", response_class=HTMLResponse)
 def submit_page(request: Request):
     return templates.TemplateResponse("complaint_submission.html", {"request": request})
 
@@ -71,7 +71,7 @@ def staff_portal(request: Request):
     return templates.TemplateResponse("staff_portal.html", {"request": request})
 
 
-@app.get("/staff-register", response_class=HTMLResponse)
+@app.get("/staff-registration", response_class=HTMLResponse)
 def staff_register(request: Request):
     return templates.TemplateResponse("staff_registration.html", {"request": request})
     
