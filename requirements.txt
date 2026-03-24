@@ -2,7 +2,6 @@ fastapi
 uvicorn
 psycopg2-binary
 python-jose
-passlib[bcrypt]
 pydantic
 email-validator
 joblib
