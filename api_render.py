@@ -13,8 +13,6 @@ import joblib
 
 app = FastAPI()
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -226,3 +224,5 @@ def submit_complaint(complaint: ComplaintCreate, current_user = Depends(get_curr
     conn.close()
 
     return {"department": dept, "priority": prio}
+
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
