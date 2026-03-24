@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Operator Dashboard</title>
+
+<script>
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.replace("03_login.html");
+    }
+</script>
+<style>
+    
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+}
+
+/* Header */
+.header {
+    padding-top: 30px;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    overflow: hidden;
+}
+
+.header img {
+    height: 200px;
+}
+
+.separator {
+    height: 40px;
+    background-color: #0c3c52;
+    width: 100%;
+    flex-shrink: 0;
+}
+    
+/* Layout */
+.container {
+    flex: 1;
+    overflow: hidden;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+    
+.logout-btn {
+    margin-left: auto;
+    margin-right: 20px;
+    padding: 8px 16px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+#departmentTitle {
+    text-align: center;
+    color: #0c3c52;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: bold;
+}
+.columns {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+}
+
+/* Column */
+.column {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    scroll-behavior: smooth;
+}
+
+.column h3 {
+    text-align: center;
+    color: #0c3c52;
+}
+
+/* Card */
+.card {
+    background: #f9fafc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.card:hover {
+    background: #eef3f7;
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card-meta {
+    font-size: 12px;
+    color: #555;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 3px 6px;
+    margin-top: 5px;
+    border-radius: 4px;
+    color: white;
+    font-size: 11px;
+}
+
+.department { background: #0c3c52; }
+.priority-immediate { background: #e74c3c; }
+.priority-same { background: #f39c12; }
+.priority-regular { background: #2ecc71; }
+
+/* Full text */
+.full-text {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-top: 0;
+    font-size: 13px;
+}
+
+.full-text.open {
+    max-height: 300px;
+    margin-top: 10px;
+}
+
+.confidence-text {
+    margin-top: 8px;
+    padding: 6px 8px;
+    font-size: 12px;
+    color: #2c3e50;
+    background-color: #f4f7fb;
+    border-left: 3px solid #0c3c52;
+    border-radius: 4px;
+    line-height: 1.4;
+}
+
+.confidence-text b {
+    color: #0c3c52;
+}
+
+.card:hover .confidence-text {
+    color: #0c3c52;  
+    font-weight: bold; 
+}
+
+.card-meta {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #6b7280; /* soft gray */
+}
+
+/* Top row: name + ID */
+.customer-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Name (more prominent) */
+.customer-name {
+    font-weight: 600;
+    color: #0c3c52;
+}
+
+/* User ID (subtle badge style) */
+.user-id {
+    font-size: 12px;
+    background-color: #eef3f7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #374151;
+}
+
+/* Date below */
+.date {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.card:hover .user-id {
+    background-color: #dbe7ef;
+}
+    
+footer {
+    background-color: #0c3c52;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <a href="08_operator_dashboard">
+        <img src="logo.png">
+    </a>
+
+    <button id="logoutBtn" class="logout-btn">
+        Logout
+    </button>
+</div>
+
+<div class="separator"></div>
+
+<div class="container">
+
+    <h2 id="departmentTitle"> </h2>
+
+    <div class="columns">
+
+        <div class="column" id="immediateCol">
+            <h3>Immediate</h3>
+        </div>
+
+        <div class="column" id="sameDayCol">
+            <h3>Same Day</h3>
+        </div>
+
+        <div class="column" id="regularCol">
+            <h3>Regular</h3>
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    FinResolve Operator Panel
+</footer>
+
+<script>
+    
+function formatDate(d) {
+    const date = new Date(d);
+
+    const options = {
+        month: "long",
+        day: "numeric"
+    };
+
+    const formattedDate = date.toLocaleDateString(undefined, options);
+    const formattedTime = date.toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit"
+    });
+
+    return `Submitted on ${formattedDate} at ${formattedTime}`;
+}
+
+// choose column
+function getColumn(priority) {
+    if (!priority) return null;
+
+    priority = priority.toLowerCase();
+
+    if (priority === "immediate") return "immediateCol";
+    if (priority === "same_day") return "sameDayCol";
+    return "regularCol";
+}
+
+// badge class
+function getBadgeClass(priority) {
+    if (priority === "immediate") return "priority-immediate";
+    if (priority === "same_day") return "priority-same";
+    return "priority-regular";
+}
+
+// load data
+async function loadOperatorComplaints() {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("http://127.0.0.1:8000/operator-complaints", {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    const result = await res.json();
+
+//  set department title
+    document.getElementById("departmentTitle").innerText =
+        result.department + " Department";
+
+// loop complaints
+    result.complaints.forEach(c => {
+
+        const colId = getColumn(c.predicted_priority);
+        if (!colId) return;
+
+        const column = document.getElementById(colId);
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const deptConf = (c.department_confidence_score * 100).toFixed(1);
+        const prioConf = (c.priority_confidence_score * 100).toFixed(1);
+        
+        card.innerHTML = `
+            <div class="card-title">
+                ${c.complaint_text.slice(0, 60)}...
+            </div>
+        
+           <div class="card-meta">
+                <div class="submitted-by">
+                    Submitted by 
+                    <span class="customer-name">${c.customer_name}</span> 
+                    <span class="user-id">(User ID: ${c.user_id})</span>
+                </div>
+                <div class="date">
+                    ${formatDate(c.created_at)}
+                </div>
+            </div>
+        
+            <div class="confidence-text">
+                Routing confidence: <b>${deptConf}%</b> • Priority confidence: <b>${prioConf}%</b>
+            </div>
+        
+            <div class="full-text">
+                ${c.complaint_text}
+            </div>
+        `;
+
+        // toggle
+        card.addEventListener("click", () => {
+            const fullText = card.querySelector(".full-text");
+            const isOpen = fullText.classList.contains("open");
+            
+            // close all
+            document.querySelectorAll(".full-text").forEach(el => el.classList.remove("open"));
+            
+            // open clicked one
+            if (!isOpen) {
+                fullText.classList.add("open");
+            }
+        });
+
+        column.appendChild(card);
+    });
+}
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", () => {
+    // remove token
+    localStorage.removeItem("token");
+
+    // redirect to login
+    window.location.replace("03_login.html");
+});
+
+window.onload = loadOperatorComplaints;
+
+</script>
+
+</body>
+</html>

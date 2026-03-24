@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FinResolve Portal</title>
+
+    <style>
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;    
+            overflow: hidden;   
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .header {
+            padding-top:30px;
+            display: flex;
+            align-items: center;
+            height: 60px;   /* fixed */
+            overflow: hidden;
+        }
+
+        .header img {
+            height: 200px;       
+            display: block;     
+        }
+
+        .separator {
+            height: 40px;                 
+            background-color: #0c3c52;    
+            width: 100%;
+            flex-shrink: 0; 
+        }
+
+        .container {
+            flex: 1;
+            overflow-y: auto;   
+            padding: 40px;
+            padding-top: 0;
+            scroll-behavior: smooth;
+        }
+
+        h2 {
+            color: #0c3c52;
+        }
+
+        .row {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .column {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #0c3c52;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #145a7a;
+        }
+
+        footer {
+            background-color: #0c3c52;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 0;
+            flex-shrink: 0;
+        }
+    </style>
+
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="">
+            <img src="logo.png" alt="Logo">
+        </a>
+    </div>
+
+    <div class='separator'></div>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <h2>Welcome to the FinResolve Portal</h2>
+        <p>
+            Our system is designed to help you submit, track, and resolve financial complaints efficiently and transparently.
+            Every complaint is carefully reviewed and routed to the appropriate department to ensure timely and fair resolution.
+        </p>
+
+        <h3>Start Your Complaint Process</h3>
+        <p>
+            The first step is to create an account. Once you've created your account, you can submit complaints and track their progress.
+        </p>
+
+        <!-- Side-by-side Sections -->
+        <div class="row">
+
+            <!-- Returning Users -->
+            <div class="column">
+                <h3>Returning Users</h3>
+                <p>Already started?</p>
+                <p>Pick up where you left off and log in.</p>
+
+                <a href="03_login.html">
+                    <button type="submit">Login</button>
+                </a>
+            </div>
+
+            <!-- New Users -->
+            <div class="column">
+                <h3>New Users</h3>
+                <p>
+                    Create an account to submit your complaint, track its progress, and receive updates.
+                    Your information will be securely saved for future access.
+                </p>
+
+                    <a href="02_customer_registration.html">
+                        <button>Create an Account</button>
+                    </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>FinResolve System</strong></p>
+        <p>Helping users resolve financial complaints efficiently and transparently.</p>
+        <p>Email: support@finresolve.com</p>
+        <p>&copy; 2026 FinResolve. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
