@@ -5,7 +5,6 @@
     <title>FinResolve Portal</title>
 
     <style>
-
         html, body {
             height: 100%;
             margin: 0;
@@ -96,6 +95,11 @@
         }
     </style>
 
+    <script>
+        // ✅ Works both locally and on Render
+        const BASE_URL = window.location.origin;
+    </script>
+
 </head>
 <body>
 
@@ -109,7 +113,6 @@
     <div class='separator'></div>
 
     <!-- Main Content -->
-    
     <div class="container">
         <div class="form-box">
             
@@ -118,13 +121,13 @@
     
             <form id="registerForm">
 
-                <label for="name">Name:</label>
+                <label>Name:</label>
                 <input type="text" id="name" required>
             
-                <label for="email">Email:</label>
+                <label>Email:</label>
                 <input type="email" id="email" required>
             
-                <label for="password">Password:</label>
+                <label>Password:</label>
                 <input type="password" id="password" required>
             
                 <button type="submit">Submit</button>
@@ -144,11 +147,11 @@
     <script>
 
     const nameInput = document.getElementById("name");
-        nameInput.addEventListener("blur", function () {
-            this.value = this.value
-                .toLowerCase()
-                .replace(/\b\w/g, char => char.toUpperCase());
-        });
+    nameInput.addEventListener("blur", function () {
+        this.value = this.value
+            .toLowerCase()
+            .replace(/\b\w/g, char => char.toUpperCase());
+    });
         
     document.getElementById("registerForm").addEventListener("submit", async function(e) {
         e.preventDefault();
@@ -160,7 +163,7 @@
         };
     
         try {
-            const response = await fetch("http://127.0.0.1:8000/register", {
+            const response = await fetch(`${BASE_URL}/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -171,16 +174,16 @@
             const result = await response.json();
     
             if (response.ok) {
-            document.querySelector(".form-box").innerHTML = `
-                <div style="text-align: center;">
-                    <h2 style="color: green;">Your account has been successfully created.</h2>
-                    <p>You will be redirected to the login page shortly.</p>
-                </div>
-            `;
+                document.querySelector(".form-box").innerHTML = `
+                    <div style="text-align: center;">
+                        <h2 style="color: green;">Your account has been successfully created.</h2>
+                        <p>You will be redirected to the login page shortly.</p>
+                    </div>
+                `;
 
-            setTimeout(() => {
-                window.location.replace("03_login.html");
-            }, 3000);
+                setTimeout(() => {
+                    window.location.replace("03_login.html");
+                }, 3000);
                 
             } else {
                 alert(result.detail || "Error occurred");

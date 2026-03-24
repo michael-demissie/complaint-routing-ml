@@ -17,13 +17,13 @@
             background-color: #f5f7fa;
         }
 
-        /* Header */
         .header {
             padding-top:30px;
             display: flex;
             align-items: center;
             height: 60px;
             overflow: hidden;
+            padding-left: 20px;
         }
 
         .header img {
@@ -37,7 +37,6 @@
             width: 100%;
         }
 
-        /* Main */
         .container {
             flex: 1;
             display: flex;
@@ -88,7 +87,6 @@
             margin-top: 15px;
         }
 
-        /* Footer */
         footer {
             background-color: #0c3c52;
             color: white;
@@ -97,17 +95,22 @@
         }
     </style>
 
+    <script>
+        // ✅ Works locally + Render
+        const BASE_URL = window.location.origin;
+    </script>
+
 </head>
 <body>
 
-    <!-- Header -->
     <div class="header">
-        <img src="logo.png" alt="FinResolve Logo">
+        <a href="04_staff_portal.html">
+            <img src="logo.png" alt="FinResolve Logo">
+        </a>
     </div>
 
     <div class="separator"></div>
 
-    <!-- Main Content -->
     <div class="container">
         <div class="form-box">
             
@@ -128,7 +131,6 @@
                 <label>Password:</label>
                 <input type="password" id="password" required>
 
-                <!-- Reviewer Checkbox -->
                 <div class="checkbox-container">
                     <label>
                         <input type="checkbox" id="reviewer" checked>
@@ -136,7 +138,6 @@
                     </label>
                 </div>
 
-                <!-- Department Dropdown -->
                 <div id="departmentSection" style="display: none;">
                     <label>Department:</label>
                     <select id="department">
@@ -159,7 +160,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <p><strong>FinResolve System</strong></p>
         <p>Helping users resolve financial complaints efficiently and transparently.</p>
@@ -179,16 +179,10 @@
         const reviewerCheckbox = document.getElementById("reviewer");
         const departmentSection = document.getElementById("departmentSection");
 
-        // Toggle department dropdown
         reviewerCheckbox.addEventListener("change", () => {
-            if (reviewerCheckbox.checked) {
-                departmentSection.style.display = "none";
-            } else {
-                departmentSection.style.display = "block";
-            }
+            departmentSection.style.display = reviewerCheckbox.checked ? "none" : "block";
         });
 
-        // Submit form
         document.getElementById("registerForm").addEventListener("submit", async function(e) {
             e.preventDefault();
 
@@ -206,7 +200,7 @@
             }
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/register", {
+                const response = await fetch(`${BASE_URL}/register`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
