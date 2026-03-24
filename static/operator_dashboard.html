@@ -224,7 +224,7 @@ footer {
 <body>
 
 <div class="header">
-    <a href="08_operator_dashboard">
+    <a href="">
         <img src="logo.png">
     </a>
 
@@ -312,7 +312,7 @@ async function loadOperatorComplaints() {
 
 //  set department title
     document.getElementById("departmentTitle").innerText =
-        result.department + " Department";
+        "Department of " + result.department;
 
 // loop complaints
     result.complaints.forEach(c => {

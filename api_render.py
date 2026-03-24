@@ -2,6 +2,9 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
+from fastapi import Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from passlib.context import CryptContext
@@ -21,6 +24,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+templates = Jinja2Templates(directory="templates")
+
+@app.get("/", response_class=HTMLResponse)
+def serve_portal(request: Request):
+    return templates.TemplateResponse(
+        "customer_portal.html",   # 👈 your file name
+        {"request": request}
+    )
+    
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # -------------------------
@@ -224,5 +236,75 @@ def submit_complaint(complaint: ComplaintCreate, current_user = Depends(get_curr
     conn.close()
 
     return {"department": dept, "priority": prio}
+
+
+@app.get("/operator-complaints")
+def get_operator_complaints(current_user = Depends(get_current_user)):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if current_user["role"] != "operator":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    cursor.execute("""
+        SELECT 
+            c.complaint_text,
+            c.predicted_department,
+            c.predicted_priority,
+            c.department_confidence_score,
+            c.priority_confidence_score,
+            c.created_at,
+            u.name AS customer_name,
+            u.user_id
+        FROM complaints c
+        JOIN users u ON c.user_id = u.user_id  
+        WHERE c.predicted_department = %s
+          AND c.predicted_priority IS NOT NULL
+        ORDER BY c.created_at DESC
+    """, (current_user["department"],))
+
+    complaints = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return {
+        "department": current_user["department"],   
+        "complaints": complaints
+    }
+
+@app.get("/reviewer-complaints")
+def get_reviewer_complaints(current_user = Depends(get_current_user)):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if current_user["role"] != "reviewer":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    cursor.execute("""
+        SELECT 
+            c.complaint_id,
+            c.complaint_text,
+            c.predicted_department,
+            c.predicted_priority,
+            c.department_confidence_score,
+            c.priority_confidence_score,
+            c.created_at,
+            u.name AS customer_name,
+            u.user_id AS user_id
+        FROM complaints c
+        JOIN users u ON c.user_id = u.user_id
+        WHERE 
+            c.predicted_department IS NULL
+            OR c.predicted_priority IS NULL
+        ORDER BY c.created_at DESC
+    """)
+
+    complaints = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return complaints
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
