@@ -5,6 +5,8 @@
 <title>Operator Dashboard</title>
 
 <script>
+    const BASE_URL = window.location.origin;
+    
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -300,7 +302,7 @@ function getBadgeClass(priority) {
 async function loadOperatorComplaints() {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://127.0.0.1:8000/operator-complaints", {
+    const res = await fetch(`${BASE_URL}/operator-complaints`, {
         headers: {
             "Authorization": "Bearer " + token
         }
