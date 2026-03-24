@@ -6,7 +6,6 @@ data/raw/
 data/processed/
 *.pt
 *.pkl
-*.joblib
 .env
 data/raw/
 data/processed/
