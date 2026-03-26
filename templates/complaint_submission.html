@@ -247,6 +247,7 @@
                         Thank you for submitting your complaint.<br><br>
                         Your complaint has been routed to the <strong>${data.department}</strong> department. We will let you know your expected waiting time after your complaint is reviewed by an operator in <strong>${data.department}</strong> department.
                         `;
+                    }
                     else if (data.priority && data.department === null) {
                         const resolutionTime = getResolutionTime(data.priority);
                         message = `
