@@ -242,11 +242,26 @@
         
                     let message = "";
         
-                    if (data.needs_review) {
+                    if (data.department && data.priority === null) {
+                        message = `
+                        Thank you for submitting your complaint.<br><br>
+                        Your complaint has been routed to the <strong>${data.department}</strong> department. We will let you know your expected waiting time after your complaint is reviewed by an operator in <strong>${data.department}</strong> department.
+                        `;
+                    else if (data.priority && data.department === null) {
+                        const resolutionTime = getResolutionTime(data.priority);
+                        message = `
+                        Thank you for submitting your complaint.<br><br>
+                        Your complaint will be reviewed by our team and routed to the appropriate department.<br>
+
+                         Please allow ${resolutionTime} for resolution.
+                        `;
+                    }
+                    else if (data.department === null && data.priority === null){
                         message = `
                         Thank you for submitting your complaint.<br><br>
                         Your complaint will be reviewed by our team and routed to the appropriate department shortly.
                         `;
+
                     } else {
                         const resolutionTime = getResolutionTime(data.priority);
         
@@ -261,7 +276,7 @@
         
                     setTimeout(() => {
                         window.location.href = "/customer-dashboard";
-                    }, 10000);
+                    }, 5000);
         
                 } else {
                     alert(data.detail);
