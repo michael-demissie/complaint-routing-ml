@@ -9,12 +9,17 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from passlib.context import CryptContext
-from db_render import get_db_connection  # ✅ changed
+
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+
+from db_render import get_db_connection  
 
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 import joblib
 
+    
 app = FastAPI()
 
 app.add_middleware(
@@ -170,18 +175,73 @@ def login(user: UserLogin):
 # LOAD MODELS
 # -------------------------
 
+MODEL_PATH = "models/Department_model_Bert"
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+model.eval()
+
+# ---- Department mapping ----
+id2label = {
+    0: 'Bank accounts',
+    1: 'Card services',
+    2: 'Consumer loans',
+    3: 'Credit reporting',
+    4: 'Debt collection',
+    5: 'Money transfer services',
+    6: 'Mortgage',
+    7: 'Payday / personal loans',
+    8: 'Student loan'
+}
+
+# # ---- Prediction function ----
+# def predict_department(text: str):
+#     inputs = tokenizer(
+#         text,
+#         return_tensors="pt",
+#         truncation=True,
+#         padding=True
+#     )
+
+#     with torch.no_grad():
+#         outputs = model(**inputs)
+#         probs = torch.softmax(outputs.logits, dim=1)
+
+#         confidence, pred_class = torch.max(probs, dim=1)
+
+#     return {
+#         "department": id2label[pred_class.item()],
+#         "confidence": float(confidence.item())
+#     }
+    
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-department_model = joblib.load(os.path.join(BASE_DIR, "models", "department_model.joblib"))
+# department_model = joblib.load(os.path.join(BASE_DIR, "models", "department_model.joblib"))
 priority_model = joblib.load(os.path.join(BASE_DIR, "models", "priority_model.joblib"))
 
 def predict_department_and_priority(text: str):
     input_data = [text]
+   
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        padding=True
+    )
 
-    dept_pred = department_model.predict(input_data)[0]
-    dept_probs = department_model.predict_proba(input_data)
+    with torch.no_grad():
+        outputs = model(**inputs)
+        probs = torch.softmax(outputs.logits, dim=1)
+
+        confidence, pred_class = torch.max(probs, dim=1)
+
+        dept_pred =  id2label[pred_class.item()]
+        dept_probs = float(confidence.item())
+        
+    # dept_pred = department_model.predict(input_data)[0]
+    # dept_probs = department_model.predict_proba(input_data)
     dept_conf = float(max(dept_probs[0]))
 
+    # ---- SVM (priority) ----
     prio_pred = priority_model.predict(input_data)[0]
     prio_probs = priority_model.predict_proba(input_data)
     prio_conf = float(max(prio_probs[0]))
