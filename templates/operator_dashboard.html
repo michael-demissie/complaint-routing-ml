@@ -286,15 +286,15 @@ function getColumn(priority) {
 
     priority = priority.toLowerCase();
 
-    if (priority === "immediate") return "immediateCol";
-    if (priority === "same_day") return "sameDayCol";
+    if (priority === "critical") return "immediateCol";
+    if (priority === "high_priority") return "sameDayCol";
     return "regularCol";
 }
 
 // badge class
 function getBadgeClass(priority) {
-    if (priority === "immediate") return "priority-immediate";
-    if (priority === "same_day") return "priority-same";
+    if (priority === "critical") return "priority-immediate";
+    if (priority === "high_priority") return "priority-same";
     return "priority-regular";
 }
 
