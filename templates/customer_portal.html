@@ -21,12 +21,6 @@
             margin: 0;
         }
 
-        .app-scale {
-            width: 1512px;
-            height: 982px;
-            transform-origin: top left;
-        }
-
         .header {
             padding-top:30px;
             display: flex;
@@ -50,7 +44,7 @@
 
         .container {
             flex: 1;
-            overflow: visible;   
+            overflow-y: auto;   
             padding: 40px;
             padding-top: 0;
             scroll-behavior: smooth;
@@ -67,32 +61,42 @@
 
         .feature-strip {
             margin-top: 24px;
-            padding: 14px 18px;
+            padding: 16px 22px;
         
             background: linear-gradient(
                 90deg,
-                rgba(12, 60, 82, 0.08),
-                rgba(20, 90, 122, 0.05)
+                rgba(12, 60, 82, 0.04),
+                rgba(20, 90, 122, 0.06)
             );
         
-            border-radius: 10px;
+            border-radius: 12px;
         
             font-size: 14px;
-            color: #374151;
+            color: #1f2937;
         
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         
-            border: 1px solid rgba(12, 60, 82, 0.08);
+            border: 1px solid rgba(20, 90, 122, 0.12);
         
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            box-shadow: 0 6px 18px rgba(20, 90, 122, 0.08);
+        
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        
+            transition: all 0.25s ease;
         }
         
-        /* separator dots */
-        .feature-strip span {
-            color: #9ca3af;
+        /* subtle hover to catch attention */
+        .feature-strip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(20, 90, 122, 0.12);
+            background: linear-gradient(
+                90deg,
+                rgba(12, 60, 82, 0.06),
+                rgba(20, 90, 122, 0.08)
+            );
         }
         
         h3 {
@@ -261,93 +265,71 @@
 
 </head>
 <body>
-    <div class="app-scale">
-        <!-- Header -->
-        <div class="header">
-            <a href="">
-                <img src="/static/logo.png" alt="Logo">
-            </a>
+    <!-- Header -->
+    <div class="header">
+        <a href="">
+            <img src="/static/logo.png" alt="Logo">
+        </a>
+    </div>
+
+    <div class='separator'></div>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <h2>Welcome to the FinResolve Portal</h2>
+        <div class="feature-strip">
+            Secure handling <span>·</span>
+            AI-powered routing <span>·</span>
+            Real-time tracking
         </div>
-    
-        <div class='separator'></div>
-    
-        <!-- Main Content -->
-        <div class="container">
-    
-            <h2>Welcome to the FinResolve Portal</h2>
-            <div class="feature-strip">
-                Secure handling <span>·</span>
-                AI-powered routing <span>·</span>
-                Real-time tracking
+        <p>
+            Our system is designed to help you submit, track, and resolve financial complaints efficiently and transparently.
+            Every complaint is carefully reviewed and routed to the appropriate department to ensure timely and fair resolution.
+        </p>
+
+        <h3>Start Your Complaint Process</h3>
+        <p>
+            The first step is to create an account. Once you've created your account, you can submit complaints and track their progress.
+        </p>
+
+        <!-- Side-by-side Sections -->
+        <div class="row">
+
+            <!-- Returning Users -->
+            <div class="column">
+                <h3>Returning Users</h3>
+                <p>Already started?</p>
+                <p>Pick up where you left off and log in.</p>
+
+                <a href="/login">
+                    <button type="submit">Login</button>
+                </a>
             </div>
-            <p>
-                Our system is designed to help you submit, track, and resolve financial complaints efficiently and transparently.
-                Every complaint is carefully reviewed and routed to the appropriate department to ensure timely and fair resolution.
-            </p>
-    
-            <h3>Start Your Complaint Process</h3>
-            <p>
-                The first step is to create an account. Once you've created your account, you can submit complaints and track their progress.
-            </p>
-    
-            <!-- Side-by-side Sections -->
-            <div class="row">
-    
-                <!-- Returning Users -->
-                <div class="column">
-                    <h3>Returning Users</h3>
-                    <p>Already started?</p>
-                    <p>Pick up where you left off and log in.</p>
-    
-                    <a href="/login">
-                        <button type="submit">Login</button>
+
+            <!-- New Users -->
+            <div class="column">
+                <h3>New Users</h3>
+                <p>
+                    Create an account to submit your complaint, track its progress, and receive updates.
+                    Your information will be securely saved for future access.
+                </p>
+
+                    <a href="/customer-registration">
+                        <button>Create an Account</button>
                     </a>
-                </div>
-    
-                <!-- New Users -->
-                <div class="column">
-                    <h3>New Users</h3>
-                    <p>
-                        Create an account to submit your complaint, track its progress, and receive updates.
-                        Your information will be securely saved for future access.
-                    </p>
-    
-                        <a href="/customer-registration">
-                            <button>Create an Account</button>
-                        </a>
-                </div>
-    
             </div>
-    
+
         </div>
-    
-        <!-- Footer -->
-        <footer>
-            <p><strong>FinResolve System</strong></p>
-            <p>Helping users resolve financial complaints efficiently and transparently.</p>
-            <p>Email: support@finresolve.com</p>
-            <p>&copy; 2026 FinResolve. All rights reserved.</p>
-        </footer>
-        
-        <script>
-            </div>
-        
-            function scaleApp() {
-            const baseWidth = 1440;
-            const baseHeight = 900;
-        
-            const scaleX = window.innerWidth / baseWidth;
-            const scaleY = window.innerHeight / baseHeight;
-        
-            const scale = Math.min(scaleX, scaleY);
-        
-            const app = document.querySelector(".app-scale");
-            app.style.transform = `scale(${scale})`;
-        }
 
-        </script>
+    </div>
 
-window.addEventListener("resize", scaleApp);
-window.addEventListener("load", scaleApp);
+    <!-- Footer -->
+    <footer>
+        <p><strong>FinResolve System</strong></p>
+        <p>Helping users resolve financial complaints efficiently and transparently.</p>
+        <p>Email: support@finresolve.com</p>
+        <p>&copy; 2026 FinResolve. All rights reserved.</p>
+    </footer>
 </body>
 </html>
