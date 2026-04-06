@@ -142,13 +142,43 @@
     .priority-medium { background: #f39c12; }
     .priority-low { background: #2ecc71; }
 
+    .overlay {
+        position: fixed;
+        inset: 0;
+        backdrop-filter: blur(6px);
+        background: rgba(0,0,0,0.2);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease;
+        z-index: 1000;
+    }
+    
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
     .full-text {
-        display: none;
-        margin-top: 10px;
-        padding: 10px;
-        background: #f9fafc;
-        border-radius: 5px;
-        line-height: 1.6;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 75%;
+        max-height: 75%;
+        overflow-y: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.25s ease;
+    }
+    
+    .full-text.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
     }
     
     footer {
@@ -188,12 +218,14 @@
         <p><strong>FinResolve System</strong></p>
         <p>Helping users resolve financial complaints efficiently and transparently.</p>
     </footer>
+
+    <div class="overlay" id="overlay"></div>
     
     <script>
 
         function logout() {
             localStorage.removeItem("token");   // remove auth
-            window.location.href = "/login";  // redirect
+            window.location.replace("/login")  // redirect
         }
         
         function goToCreate() {
@@ -209,8 +241,8 @@
         // Priority badge class
         function getPriorityClass(priority) {
             if (!priority) return "priority-high";
-            if (priority.toLowerCase() === "immediate") return "priority-high";
-            if (priority.toLowerCase() === "same_day") return "priority-medium";
+            if (priority.toLowerCase() === "critical") return "priority-high";
+            if (priority.toLowerCase() === "high_priority") return "priority-medium";
             return "priority-low";
         }
         
@@ -250,9 +282,9 @@
                     
                         let timeline = "";
                     
-                        if (c.predicted_priority.toLowerCase() === "immediate") {
+                        if (c.predicted_priority.toLowerCase() === "critical") {
                             timeline = "within 1–2 business days";
-                        } else if (c.predicted_priority.toLowerCase() === "same_day") {
+                        } else if (c.predicted_priority.toLowerCase() === "high_priority") {
                             timeline = "within 3–4 business days";
                         } else {
                             timeline = "within 5–6 business days";
@@ -318,30 +350,26 @@
             }
         }
         
-        // open card
         function openCard(card) {
-            document.querySelectorAll(".full-text").forEach(el => el.style.display = "none");
-            card.querySelector(".full-text").style.display = "block";
+            document.querySelectorAll(".full-text").forEach(el => el.classList.remove("active"));
+            document.getElementById("overlay").classList.add("active");
+            card.querySelector(".full-text").classList.add("active");
         }
         
-        // close card
         function closeCard(card) {
-            card.querySelector(".full-text").style.display = "none";
+            card.querySelector(".full-text").classList.remove("active");
+            document.getElementById("overlay").classList.remove("active");
         }
         
-        // click outside closes all
-        document.addEventListener("click", function(e) {
-            if (!e.target.closest(".card")) {
-                document.querySelectorAll(".full-text").forEach(el => {
-                    el.style.display = "none";
-                });
-            }
+        document.getElementById("overlay").addEventListener("click", () => {
+            document.querySelectorAll(".full-text").forEach(el => el.classList.remove("active"));
+            document.getElementById("overlay").classList.remove("active");
         });
         
         // load on page open
         window.onload = loadComplaints;
     
     </script>
-
+    
 </body>
 </html>
