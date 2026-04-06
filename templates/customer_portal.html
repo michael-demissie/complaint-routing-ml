@@ -18,6 +18,13 @@
             overflow: hidden;   
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(180deg, #f5f7fa, #eaf1f5);
+            margin: 0;
+        }
+
+        .app-scale {
+            width: 1512px;
+            height: 982px;
+            transform-origin: top left;
         }
 
         .header {
@@ -43,10 +50,11 @@
 
         .container {
             flex: 1;
-            overflow-y: auto;   
+            overflow: visible;   
             padding: 40px;
             padding-top: 0;
             scroll-behavior: smooth;
+            justify-content: center;
             animation: fadeIn 0.6s ease;
         }
 
@@ -55,6 +63,36 @@
             font-size: 28px;
             font-weight: 600;
             margin-bottom: 10px;
+        }
+
+        .feature-strip {
+            margin-top: 24px;
+            padding: 14px 18px;
+        
+            background: linear-gradient(
+                90deg,
+                rgba(12, 60, 82, 0.08),
+                rgba(20, 90, 122, 0.05)
+            );
+        
+            border-radius: 10px;
+        
+            font-size: 14px;
+            color: #374151;
+        
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        
+            border: 1px solid rgba(12, 60, 82, 0.08);
+        
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        
+        /* separator dots */
+        .feature-strip span {
+            color: #9ca3af;
         }
         
         h3 {
@@ -223,71 +261,93 @@
 
 </head>
 <body>
-
-    <!-- Header -->
-    <div class="header">
-        <a href="">
-            <img src="/static/logo.png" alt="Logo">
-        </a>
-    </div>
-
-    <div class='separator'></div>
-
-    <!-- Main Content -->
-    <div class="container">
-
-        <h2>Welcome to the FinResolve Portal</h2>
-        <p style="margin-top:20px; color:#6b7280;">
-            ✔ Secure handling &nbsp;&nbsp; ✔ AI-powered routing &nbsp;&nbsp; ✔ Real-time tracking
-        </p>
-        <p>
-            Our system is designed to help you submit, track, and resolve financial complaints efficiently and transparently.
-            Every complaint is carefully reviewed and routed to the appropriate department to ensure timely and fair resolution.
-        </p>
-
-        <h3>Start Your Complaint Process</h3>
-        <p>
-            The first step is to create an account. Once you've created your account, you can submit complaints and track their progress.
-        </p>
-
-        <!-- Side-by-side Sections -->
-        <div class="row">
-
-            <!-- Returning Users -->
-            <div class="column">
-                <h3>Returning Users</h3>
-                <p>Already started?</p>
-                <p>Pick up where you left off and log in.</p>
-
-                <a href="/login">
-                    <button type="submit">Login</button>
-                </a>
-            </div>
-
-            <!-- New Users -->
-            <div class="column">
-                <h3>New Users</h3>
-                <p>
-                    Create an account to submit your complaint, track its progress, and receive updates.
-                    Your information will be securely saved for future access.
-                </p>
-
-                    <a href="/customer-registration">
-                        <button>Create an Account</button>
-                    </a>
-            </div>
-
+    <div class="app-scale">
+        <!-- Header -->
+        <div class="header">
+            <a href="">
+                <img src="/static/logo.png" alt="Logo">
+            </a>
         </div>
+    
+        <div class='separator'></div>
+    
+        <!-- Main Content -->
+        <div class="container">
+    
+            <h2>Welcome to the FinResolve Portal</h2>
+            <div class="feature-strip">
+                Secure handling <span>·</span>
+                AI-powered routing <span>·</span>
+                Real-time tracking
+            </div>
+            <p>
+                Our system is designed to help you submit, track, and resolve financial complaints efficiently and transparently.
+                Every complaint is carefully reviewed and routed to the appropriate department to ensure timely and fair resolution.
+            </p>
+    
+            <h3>Start Your Complaint Process</h3>
+            <p>
+                The first step is to create an account. Once you've created your account, you can submit complaints and track their progress.
+            </p>
+    
+            <!-- Side-by-side Sections -->
+            <div class="row">
+    
+                <!-- Returning Users -->
+                <div class="column">
+                    <h3>Returning Users</h3>
+                    <p>Already started?</p>
+                    <p>Pick up where you left off and log in.</p>
+    
+                    <a href="/login">
+                        <button type="submit">Login</button>
+                    </a>
+                </div>
+    
+                <!-- New Users -->
+                <div class="column">
+                    <h3>New Users</h3>
+                    <p>
+                        Create an account to submit your complaint, track its progress, and receive updates.
+                        Your information will be securely saved for future access.
+                    </p>
+    
+                        <a href="/customer-registration">
+                            <button>Create an Account</button>
+                        </a>
+                </div>
+    
+            </div>
+    
+        </div>
+    
+        <!-- Footer -->
+        <footer>
+            <p><strong>FinResolve System</strong></p>
+            <p>Helping users resolve financial complaints efficiently and transparently.</p>
+            <p>Email: support@finresolve.com</p>
+            <p>&copy; 2026 FinResolve. All rights reserved.</p>
+        </footer>
+        
+        <script>
+            </div>
+        
+            function scaleApp() {
+            const baseWidth = 1440;
+            const baseHeight = 900;
+        
+            const scaleX = window.innerWidth / baseWidth;
+            const scaleY = window.innerHeight / baseHeight;
+        
+            const scale = Math.min(scaleX, scaleY);
+        
+            const app = document.querySelector(".app-scale");
+            app.style.transform = `scale(${scale})`;
+        }
 
-    </div>
+        </script>
 
-    <!-- Footer -->
-    <footer>
-        <p><strong>FinResolve System</strong></p>
-        <p>Helping users resolve financial complaints efficiently and transparently.</p>
-        <p>Email: support@finresolve.com</p>
-        <p>&copy; 2026 FinResolve. All rights reserved.</p>
-    </footer>
-
+window.addEventListener("resize", scaleApp);
+window.addEventListener("load", scaleApp);
 </body>
 </html>
