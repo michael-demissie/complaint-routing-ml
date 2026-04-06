@@ -179,18 +179,18 @@ def predict_department_and_priority(text: str):
     input_data = [text]
 
     dept_pred = department_model.predict(input_data)[0]
-    dept_scores = department_model.decision_function(input_data)
-    dept_conf = max(dept_scores[0])
+    dept_probs = department_model.predict_proba(input_data)
+    dept_conf = float(max(dept_probs[0]))
 
     prio_pred = priority_model.predict(input_data)[0]
-    prio_scores = priority_model.decision_function(input_data)
-    prio_conf = max(prio_scores[0])
+    prio_probs = priority_model.predict_proba(input_data)
+    prio_conf = float(max(prio_probs[0]))
 
     return {
         "department": dept_pred,
         "priority": prio_pred,
-        "department_confidence": float(dept_conf),
-        "priority_confidence": float(prio_conf)
+        "department_confidence": dept_conf,
+        "priority_confidence": prio_conf
     }
 
 # -------------------------
