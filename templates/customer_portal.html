@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>FinResolve Portal</title>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
 
         html, body {
@@ -16,8 +16,8 @@
             flex-direction: column;
             height: 100vh;    
             overflow: hidden;   
-            font-family: Arial, sans-serif;
-            background-color: #f5f7fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, #f5f7fa, #eaf1f5);
         }
 
         .header {
@@ -35,7 +35,8 @@
 
         .separator {
             height: 40px;                 
-            background-color: #0c3c52;    
+            background-color: #0c3c52;
+            background: linear-gradient(90deg, #0c3c52, #145a7a);
             width: 100%;
             flex-shrink: 0; 
         }
@@ -46,10 +47,20 @@
             padding: 40px;
             padding-top: 0;
             scroll-behavior: smooth;
+            animation: fadeIn 0.6s ease;
         }
 
         h2 {
             color: #0c3c52;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
         .row {
@@ -60,22 +71,144 @@
 
         .column {
             flex: 1;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            
+            padding: 24px;
+            border-radius: 12px;
+        
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.06),
+                0 2px 6px rgba(0, 0, 0, 0.04);
+        
+            transition: 
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+        
+        /* subtle glow effect */
+        .column::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(255,255,255,0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* hover interaction */
+        .column:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 
+                0 14px 35px rgba(0, 0, 0, 0.10),
+                0 4px 12px rgba(0, 0, 0, 0.06);
+        
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* glow appears on hover */
+        .column:hover::before {
+            opacity: 1;
+        }
+
+        .column p {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         button {
             margin-top: 10px;
-            padding: 10px 20px;
+            padding: 12px 22px;
+        
             border: none;
-            background-color: #0c3c52;
+            border-radius: 8px;
+        
+            background: linear-gradient(135deg, #0c3c52, #145a7a);
             color: white;
+        
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        
             cursor: pointer;
+        
+            box-shadow: 
+                0 4px 10px rgba(12, 60, 82, 0.25),
+                0 2px 4px rgba(0, 0, 0, 0.08);
+        
+            transition: 
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.3s ease,
+                opacity 0.2s ease;
+        
+            position: relative;
+            overflow: hidden;
         }
-
+        
+        /* subtle shine effect */
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                rgba(255,255,255,0.4),
+                rgba(255,255,255,0)
+            );
+            transform: skewX(-20deg);
+            transition: left 0.5s ease;
+        }
+        
+        /* hover interaction */
         button:hover {
-            background-color: #145a7a;
+            transform: translateY(-2px) scale(1.03);
+        
+            box-shadow: 
+                0 8px 20px rgba(12, 60, 82, 0.35),
+                0 4px 10px rgba(0, 0, 0, 0.12);
+        
+            background: linear-gradient(135deg, #145a7a, #0c3c52);
+        }
+        
+        /* shine sweep */
+        button:hover::before {
+            left: 120%;
+        }
+        
+        /* click (pressed) effect */
+        button:active {
+            transform: scale(0.97);
+            box-shadow: 
+                0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* focus accessibility */
+        button:focus {
+            outline: none;
+            box-shadow: 
+                0 0 0 3px rgba(20, 90, 122, 0.3);
         }
 
         footer {
@@ -104,6 +237,9 @@
     <div class="container">
 
         <h2>Welcome to the FinResolve Portal</h2>
+        <p style="margin-top:20px; color:#6b7280;">
+            ✔ Secure handling &nbsp;&nbsp; ✔ AI-powered routing &nbsp;&nbsp; ✔ Real-time tracking
+        </p>
         <p>
             Our system is designed to help you submit, track, and resolve financial complaints efficiently and transparently.
             Every complaint is carefully reviewed and routed to the appropriate department to ensure timely and fair resolution.
