@@ -24,3 +24,4 @@ venv/
 .venv/
 env/
 render_db_test.ipynb
+models/Department_model_Bert/
