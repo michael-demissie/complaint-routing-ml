@@ -19,7 +19,36 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta
 import joblib
 
-    
+# libraries for the model
+import boto3
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+BUCKET_NAME = "bert-department-model"
+S3_PREFIX = "Department_model_Bert"  # folder name in S3
+LOCAL_DIR = "/tmp/models/Department_model_Bert"
+
+s3 = boto3.client("s3")
+
+def download_folder(bucket, prefix, local_dir):
+    os.makedirs(local_dir, exist_ok=True)
+    objects = s3.list_objects_v2(Bucket=bucket, Prefix=prefix)
+    for obj in objects.get("Contents", []):
+        key = obj["Key"]
+        if key.endswith("/"):
+            continue
+        local_path = os.path.join(local_dir, key.replace(prefix + "/", ""))
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
+        s3.download_file(bucket, key, local_path)
+
+# run once at startup
+download_folder(BUCKET_NAME, S3_PREFIX, LOCAL_DIR)
+
+# load model
+tokenizer = AutoTokenizer.from_pretrained(LOCAL_DIR)
+model = AutoModelForSequenceClassification.from_pretrained(LOCAL_DIR)
+model.eval()
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -175,10 +204,10 @@ def login(user: UserLogin):
 # LOAD MODELS
 # -------------------------
 
-MODEL_PATH = "models/Department_model_Bert"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
-model.eval()
+# MODEL_PATH = "models/Department_model_Bert"
+# tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+# model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+# model.eval()
 
 # ---- Department mapping ----
 id2label = {
