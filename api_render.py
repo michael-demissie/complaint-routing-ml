@@ -23,6 +23,8 @@ import joblib
 import boto3
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
+import threading
+
 app = FastAPI()
 
 BUCKET_NAME = "bert-department-model"
@@ -45,10 +47,12 @@ def download_folder(bucket, prefix, local_dir):
 tokenizer = None
 model = None
 
-@app.on_event("startup")
 def load_model():
     global tokenizer, model
-    
+
+    if model is not None:
+        return  # already loaded, skip
+        
     print("Downloading model from S3...")
     download_folder(BUCKET_NAME, S3_PREFIX, LOCAL_DIR)
 
@@ -58,6 +62,10 @@ def load_model():
     model.eval()
 
     print("Model ready!")
+
+@app.on_event("startup")
+def preload_model():
+    threading.Thread(target=load_model).start()
     
 app.add_middleware(
     CORSMiddleware,
@@ -256,6 +264,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 priority_model = joblib.load(os.path.join(BASE_DIR, "models", "priority_model.joblib"))
 
 def predict_department_and_priority(text: str):
+    load_model()
     input_data = [text]
    
     inputs = tokenizer(
