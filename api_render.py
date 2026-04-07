@@ -23,6 +23,8 @@ import joblib
 import boto3
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
+app = FastAPI()
+
 BUCKET_NAME = "bert-department-model"
 S3_PREFIX = "Department_model_Bert"  # folder name in S3
 LOCAL_DIR = "/tmp/models/Department_model_Bert"
@@ -39,18 +41,24 @@ def download_folder(bucket, prefix, local_dir):
         local_path = os.path.join(local_dir, key.replace(prefix + "/", ""))
         os.makedirs(os.path.dirname(local_path), exist_ok=True)
         s3.download_file(bucket, key, local_path)
+        
+tokenizer = None
+model = None
 
-# run once at startup
-download_folder(BUCKET_NAME, S3_PREFIX, LOCAL_DIR)
+@app.on_event("startup")
+def load_model():
+    global tokenizer, model
+    
+    print("Downloading model from S3...")
+    download_folder(BUCKET_NAME, S3_PREFIX, LOCAL_DIR)
 
-# load model
-tokenizer = AutoTokenizer.from_pretrained(LOCAL_DIR)
-model = AutoModelForSequenceClassification.from_pretrained(LOCAL_DIR)
-model.eval()
+    print("Loading model...")
+    tokenizer = AutoTokenizer.from_pretrained(LOCAL_DIR)
+    model = AutoModelForSequenceClassification.from_pretrained(LOCAL_DIR)
+    model.eval()
 
-
-app = FastAPI()
-
+    print("Model ready!")
+    
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
