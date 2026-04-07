@@ -281,11 +281,11 @@ def predict_department_and_priority(text: str):
         confidence, pred_class = torch.max(probs, dim=1)
 
         dept_pred =  id2label[pred_class.item()]
-        dept_probs = float(confidence.item())
+        dept_conf = float(confidence.item())
         
     # dept_pred = department_model.predict(input_data)[0]
     # dept_probs = department_model.predict_proba(input_data)
-    dept_conf = float(max(dept_probs[0]))
+    # dept_conf = float(max(dept_probs[0]))
 
     # ---- SVM (priority) ----
     prio_pred = priority_model.predict(input_data)[0]
