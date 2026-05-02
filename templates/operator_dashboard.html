@@ -112,7 +112,7 @@ body {
     cursor: pointer;
 }
 
-.card:hover {
+.card:not(.fr-complaint-card):hover {
     background: #eef3f7;
 }
 
@@ -140,19 +140,27 @@ body {
 .priority-same { background: #f39c12; }
 .priority-regular { background: #2ecc71; }
 
-/* Full text */
-.full-text {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    margin-top: 0;
-    font-size: 13px;
+/* Full complaint expand — [hidden] toggled in JS */
+.fr-expand-wrap { margin-top: 12px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(10,37,64,0.06); }
+.fr-expand-trigger {
+    display: flex; align-items: center; justify-content: space-between; width: 100%;
+    padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px;
+    background: linear-gradient(180deg, #fff, #f9fafb); font: inherit; font-size: 13px; font-weight: 600;
+    color: #0c3c52; cursor: pointer;
 }
-
-.full-text.open {
-    max-height: 300px;
-    margin-top: 10px;
+.fr-expand-trigger:hover { border-color: #2dd4bf; }
+.fr-expand-chevron { flex-shrink: 0; margin-left: 8px; transition: transform 0.35s ease; color: #145a7a; }
+.fr-expand-trigger[aria-expanded="true"] .fr-expand-chevron { transform: rotate(180deg); }
+.fr-expand-label { flex: 1; text-align: left; }
+.fr-complaint-panel[hidden] { display: none !important; }
+.fr-expand-wrap.is-open .fr-expand-trigger { border-radius: 10px 10px 0 0; border-bottom-color: transparent; }
+.fr-complaint-detail {
+    padding: 12px 14px 14px 16px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;
+    background: #fafbfc; font-size: 13px; line-height: 1.55;
 }
+.fr-complaint-body { margin: 0; white-space: pre-wrap; word-break: break-word; max-height: min(50vh, 360px); overflow-y: auto; }
+.card.fr-complaint-card { cursor: default; }
+.card.fr-complaint-card:hover { background: #f9fafc; }
 
 .confidence-text {
     margin-top: 8px;
@@ -264,6 +272,21 @@ footer {
 </footer>
 
 <script>
+
+function setComplaintExpanded(wrap, open) {
+    const panel = wrap.querySelector(".fr-complaint-panel");
+    const btn = wrap.querySelector(".fr-expand-trigger");
+    const label = btn.querySelector(".fr-expand-label");
+    wrap.classList.toggle("is-open", open);
+    panel.classList.toggle("is-open", open);
+    if (open) {
+        panel.removeAttribute("hidden");
+    } else {
+        panel.setAttribute("hidden", "");
+    }
+    btn.setAttribute("aria-expanded", String(open));
+    label.textContent = open ? "Hide full complaint" : "View full complaint";
+}
     
 function formatDate(d) {
     const date = new Date(d);
@@ -325,7 +348,7 @@ async function loadOperatorComplaints() {
         const column = document.getElementById(colId);
 
         const card = document.createElement("div");
-        card.className = "card";
+        card.className = "card fr-complaint-card";
 
         const deptConf = (c.department_confidence_score * 100).toFixed(1);
         const prioConf = (c.priority_confidence_score * 100).toFixed(1);
@@ -350,22 +373,33 @@ async function loadOperatorComplaints() {
                 Routing confidence: <b>${deptConf}%</b> • Priority confidence: <b>${prioConf}%</b>
             </div>
         
-            <div class="full-text">
-                ${c.complaint_text}
+            <div class="fr-expand-wrap">
+                <button type="button" class="fr-expand-trigger" aria-expanded="false">
+                    <span class="fr-expand-label">View full complaint</span>
+                    <svg class="fr-expand-chevron" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </button>
+                <div class="fr-complaint-panel" hidden>
+                    <div class="fr-complaint-panel-inner">
+                        <div class="fr-complaint-detail">
+                            <p class="fr-complaint-body"></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
 
-        // toggle
-        card.addEventListener("click", () => {
-            const fullText = card.querySelector(".full-text");
-            const isOpen = fullText.classList.contains("open");
-            
-            // close all
-            document.querySelectorAll(".full-text").forEach(el => el.classList.remove("open"));
-            
-            // open clicked one
-            if (!isOpen) {
-                fullText.classList.add("open");
+        const wrap = card.querySelector(".fr-expand-wrap");
+        card.querySelector(".fr-complaint-body").textContent = c.complaint_text;
+
+        card.querySelector(".fr-expand-trigger").addEventListener("click", (e) => {
+            e.stopPropagation();
+            const panel = wrap.querySelector(".fr-complaint-panel");
+            const opening = panel.hasAttribute("hidden");
+            document.querySelectorAll(".columns .fr-expand-wrap").forEach(w => {
+                setComplaintExpanded(w, false);
+            });
+            if (opening) {
+                setComplaintExpanded(wrap, true);
             }
         });
 

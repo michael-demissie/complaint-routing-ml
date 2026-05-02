@@ -112,7 +112,7 @@
         cursor: pointer;
     }
     
-    .card:hover {
+    .card:not(.fr-complaint-card):hover {
         background: #eef3f7;
     }
     
@@ -144,44 +144,27 @@
     .priority-medium { background: #f39c12; }
     .priority-low { background: #2ecc71; }
 
-    .overlay {
-        position: fixed;
-        inset: 0;
-        backdrop-filter: blur(6px);
-        background: rgba(0,0,0,0.2);
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.25s ease;
-        z-index: 1000;
+    /* Full complaint expand — [hidden] toggled in JS */
+    .fr-expand-wrap { margin-top: 12px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(10,37,64,0.06); }
+    .fr-expand-trigger {
+        display: flex; align-items: center; justify-content: space-between; width: 100%;
+        padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px;
+        background: linear-gradient(180deg, #fff, #f9fafb); font: inherit; font-size: 13px; font-weight: 600;
+        color: #0c3c52; cursor: pointer;
     }
-    
-    .overlay.active {
-        opacity: 1;
-        visibility: visible;
+    .fr-expand-trigger:hover { border-color: #2dd4bf; }
+    .fr-expand-chevron { flex-shrink: 0; margin-left: 8px; transition: transform 0.35s ease; color: #145a7a; }
+    .fr-expand-trigger[aria-expanded="true"] .fr-expand-chevron { transform: rotate(180deg); }
+    .fr-expand-label { flex: 1; text-align: left; }
+    .fr-complaint-panel[hidden] { display: none !important; }
+    .fr-expand-wrap.is-open .fr-expand-trigger { border-radius: 10px 10px 0 0; border-bottom-color: transparent; }
+    .fr-complaint-detail {
+        padding: 12px 14px 14px 16px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;
+        background: #fafbfc; font-size: 13px; line-height: 1.55;
     }
-    
-    .full-text {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.9);
-        width: 75%;
-        max-height: 75%;
-        overflow-y: auto;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        z-index: 1001;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.25s ease;
-    }
-    
-    .full-text.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(1);
-    }
+    .fr-complaint-body { margin: 0; white-space: pre-wrap; word-break: break-word; max-height: min(50vh, 360px); overflow-y: auto; }
+    .card.fr-complaint-card { cursor: default; }
+    .card.fr-complaint-card:hover { background: #fff; box-shadow: 0 1px 4px rgba(10,37,64,0.08); }
     
     footer {
         background-color: #0c3c52;
@@ -221,8 +204,6 @@
         <p>Helping users resolve financial complaints efficiently and transparently.</p>
     </footer>
 
-    <div class="overlay" id="overlay"></div>
-    
     <script>
 
         function logout() {
@@ -240,12 +221,19 @@
             return date.toLocaleString(); // includes time
         }
         
-        // Priority badge class
-        function getPriorityClass(priority) {
-            if (!priority) return "priority-high";
-            if (priority.toLowerCase() === "critical") return "priority-high";
-            if (priority.toLowerCase() === "high_priority") return "priority-medium";
-            return "priority-low";
+        function setComplaintExpanded(wrap, open) {
+            const panel = wrap.querySelector(".fr-complaint-panel");
+            const btn = wrap.querySelector(".fr-expand-trigger");
+            const label = btn.querySelector(".fr-expand-label");
+            wrap.classList.toggle("is-open", open);
+            panel.classList.toggle("is-open", open);
+            if (open) {
+                panel.removeAttribute("hidden");
+            } else {
+                panel.setAttribute("hidden", "");
+            }
+            btn.setAttribute("aria-expanded", String(open));
+            label.textContent = open ? "Hide full complaint" : "View full complaint";
         }
         
         // Load complaints from backend
@@ -272,10 +260,9 @@
                 data.forEach(c => {
         
                     const preview = c.complaint_text.slice(0, 80) + "...";
-                    const priorityClass = getPriorityClass(c.predicted_priority);
         
                     const card = document.createElement("div");
-                    card.className = "card";
+                    card.className = "card fr-complaint-card";
         
                     let routingMessage = "";
     
@@ -326,22 +313,34 @@
                             ${routingMessage}
                         </div>
                     
-                        <div class="full-text">
-                            <div style="line-height:1.6;">
-                                ${c.complaint_text}
+                        <div class="fr-expand-wrap">
+                            <button type="button" class="fr-expand-trigger" aria-expanded="false">
+                                <span class="fr-expand-label">View full complaint</span>
+                                <svg class="fr-expand-chevron" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                            </button>
+                            <div class="fr-complaint-panel" hidden>
+                                <div class="fr-complaint-panel-inner">
+                                    <div class="fr-complaint-detail">
+                                        <p class="fr-complaint-body"></p>
+                                    </div>
+                                </div>
                             </div>
-                            <button class="close-btn">Close</button>
                         </div>
                     `;
         
-                    // click to expand ONLY top area
-                    card.querySelector(".card-title").addEventListener("click", () => openCard(card));
-                    card.querySelector(".card-date").addEventListener("click", () => openCard(card));
-        
-                    // close button
-                    card.querySelector(".close-btn").addEventListener("click", (e) => {
+                    const wrap = card.querySelector(".fr-expand-wrap");
+                    card.querySelector(".fr-complaint-body").textContent = c.complaint_text;
+
+                    card.querySelector(".fr-expand-trigger").addEventListener("click", (e) => {
                         e.stopPropagation();
-                        closeCard(card);
+                        const panel = wrap.querySelector(".fr-complaint-panel");
+                        const opening = panel.hasAttribute("hidden");
+                        document.querySelectorAll(".complaint-list .fr-expand-wrap").forEach(w => {
+                            setComplaintExpanded(w, false);
+                        });
+                        if (opening) {
+                            setComplaintExpanded(wrap, true);
+                        }
                     });
         
                     container.appendChild(card);
@@ -352,20 +351,12 @@
             }
         }
         
-        function openCard(card) {
-            document.querySelectorAll(".full-text").forEach(el => el.classList.remove("active"));
-            document.getElementById("overlay").classList.add("active");
-            card.querySelector(".full-text").classList.add("active");
-        }
-        
-        function closeCard(card) {
-            card.querySelector(".full-text").classList.remove("active");
-            document.getElementById("overlay").classList.remove("active");
-        }
-        
-        document.getElementById("overlay").addEventListener("click", () => {
-            document.querySelectorAll(".full-text").forEach(el => el.classList.remove("active"));
-            document.getElementById("overlay").classList.remove("active");
+        document.addEventListener("click", function(e) {
+            if (!e.target.closest(".complaint-list .card")) {
+                document.querySelectorAll(".complaint-list .fr-expand-wrap").forEach(w => {
+                    setComplaintExpanded(w, false);
+                });
+            }
         });
         
         // load on page open

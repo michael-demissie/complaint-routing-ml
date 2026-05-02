@@ -1,27 +1,35 @@
-venv/
-__pycache__/
-.ipynb_checkpoints/
-.DS_Store
-data/raw/
-data/processed/
-*.pt
-*.pkl
-.env
-data/raw/
-data/processed/
-venv/
-data/interim/
-
-# Data folders
-data/
-
-# Local folders
-local/
-Local/
-
-# Virtual environments
+# Python
 venv/
 .venv/
 env/
-render_db_test.ipynb
-models/Department_model_Bert/
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Environment variables
+.env
+
+# Data
+data/
+
+# Model weights
+models/
+*.safetensors
+*.bin
+*.pt
+*.pkl
+*.joblib
+
+# Logs
+logs/
+
+# Tests
+.pytest_cache/
+htmlcov/
+.coverage
