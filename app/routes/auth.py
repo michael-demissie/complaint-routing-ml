@@ -5,7 +5,9 @@ from datetime import datetime, timedelta
 from app.schemas.auth import UserCreate, UserLogin, TokenResponse
 from app.database import get_db_connection
 from app.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.logger import get_logger
 
+logger = get_logger(__name__)
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -24,6 +26,7 @@ def create_access_token(data: dict):
 @router.post("/register")
 def register(user: UserCreate):
     role = "reviewer" if user.reviewer else ("operator" if user.department else "customer")
+    logger.info("Registering new user | email=%s | role=%s", user.email, role)
     hashed_password = pwd_context.hash(user.password)
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -33,9 +36,11 @@ def register(user: UserCreate):
             VALUES (%s, %s, %s, %s, %s)
         """, (user.name, user.email, hashed_password, role, user.department))
         conn.commit()
+        logger.info("User registered successfully | email=%s | role=%s", user.email, role)
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=400, detail="Email already exists")
+        logger.warning("Registration failed | email=%s | reason=%s", user.email, str(e))
+        raise HTTPException(status_code=400, detail="detail=str(e)")
     finally:
         cursor.close()
         conn.close()
@@ -43,17 +48,21 @@ def register(user: UserCreate):
 
 @router.post("/login", response_model=TokenResponse)
 def login(user: UserLogin):
+    logger.info("Login attempt | email=%s", user.email)
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT * FROM users WHERE email = %s", (user.email,))
         row = cursor.fetchone()
         if not row:
+            logger.warning("Login failed — user not found | email=%s", user.email)
             raise HTTPException(status_code=400, detail="Invalid email or password")
         db_user = row_to_dict(cursor, row)
         if not verify_password(user.password, db_user["hashed_password"]):
+            logger.warning("Login failed — wrong password | email=%s", user.email)
             raise HTTPException(status_code=400, detail="Invalid email or password")
         token = create_access_token({"user_id": db_user["user_id"], "role": db_user["role"]})
+        logger.info("Login successful | email=%s | role=%s", user.email, db_user["role"])
         return {"access_token": token, "token_type": "bearer"}
     finally:
         cursor.close()
