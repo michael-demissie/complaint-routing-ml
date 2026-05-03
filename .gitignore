@@ -33,3 +33,9 @@ logs/
 .pytest_cache/
 htmlcov/
 .coverage
+
+# Allow LightGBM priority model files
+!models/
+!models/priority-lgbm/
+!models/priority-lgbm/pipeline.joblib
+!models/priority-lgbm/label_encoder.joblib
