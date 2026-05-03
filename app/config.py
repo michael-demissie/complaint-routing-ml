@@ -15,7 +15,7 @@ DEPT_MODEL_LOCAL_DIR = os.getenv("DEPT_MODEL_LOCAL_DIR", "/tmp/models/department
 
 # Models
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-PRIORITY_MODEL_DIR = os.path.join(BASE_DIR, "..", "models", "priority-model-bert")
+PRIORITY_MODEL_DIR = os.getenv("PRIORITY_MODEL_DIR", "/tmp/models/priority-model-bert")
 
 # API
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",")
